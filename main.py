@@ -76,7 +76,7 @@ async def on_message(message):
     # super duper advanced reply system (exclusive to me uwu)
 
     if message.channel == msglog:
-        if message.author == issvsi:
+        if message.author.id == issvsi:
             if message.content.startswith("!reply"):
                 cmd_parts = message.content.split(" ", 2)
                 if len(cmd_parts) < 3:
