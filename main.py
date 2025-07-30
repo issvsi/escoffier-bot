@@ -167,15 +167,9 @@ async def on_message(message):
     # secrets uwu
 
     if "crazy" in message.content.lower().replace(" ", ""):
-            await message.channel.send("Crazy? I was crazy once. They locked me in a room. A rubber room. A rubber room with rats. And rats make me crazy.")
-            await asyncio.sleep(3)
-            await message.channel.send("Crazy? I was crazy once. They locked me in a room. A rubber room. A rubber room with rats. And rats make me crazy.")
-            await asyncio.sleep(3)
-            await message.channel.send("Crazy? I was crazy once. They locked me in a room. A rubber room. A rubber room with rats. And rats make me crazy.")
-            await asyncio.sleep(3)
-            await message.channel.send("Crazy? I was crazy once. They locked me in a room. A rubber room. A rubber room with rats. And rats make me crazy.")
-            await asyncio.sleep(3)
-            await message.channel.send("Crazy? I was crazy once. They locked me in a room. A rubber room. A rubber room with rats. And rats make me crazy.")
+            for x in range(5):
+                await message.channel.send("Crazy? I was crazy once. They locked me in a room. A rubber room. A rubber room with rats. And rats make me crazy.")
+                await asyncio.sleep(3)
 
     if "touhou" in message.content.lower().replace(" ", ""):
         await message.channel.send("toe hoe")
