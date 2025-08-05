@@ -3,6 +3,7 @@ import random
 import os
 import asyncio
 from dotenv import load_dotenv
+import json
 
 load_dotenv() # all env stuff is here do not remove this line or else you are FUCKED (bot safety reasons)
 
@@ -15,14 +16,22 @@ async def on_ready():
     print("Bot is ready")
     log = client.get_channel(1382448506488488016)
     await log.send("Bot is online! :white_check_mark:")
+    
     global issvsi
     global msglog
     global consolelog
     global prefix
+    global blacklist
+    global blacklist_file
+
+    blacklist_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "blacklist.json")
     issvsi = int(os.getenv('issvsi_id'))
     msglog = client.get_channel(int(os.getenv('msglog_id')))
     consolelog = client.get_channel(int(os.getenv('console_id')))
     prefix = os.getenv('prefix')
+
+    with open(blacklist_file, "r") as file:
+        blacklist = json.load(file)
 
 @client.event # when somebody invites le bot
 async def on_guild_join(guild):
@@ -34,6 +43,8 @@ async def on_guild_join(guild):
 @client.event
 async def on_message(message):
     if message.author == client.user:
+        return
+    if message.author.id in blacklist:
         return
     
     # DM bridge (log the DM)
@@ -153,6 +164,43 @@ async def on_message(message):
                     await message.channel.send("Please pick a number.")
             else:
                 await message.channel.send("Please provide an input (Number, must be greater than 1.)")
+        
+        if command == "blacklist":
+            if message.author.id == issvsi:
+                if args:
+                    if args[0] == "remove":
+                        if len(args) > 1 and args[1].isdigit():
+                            user_id = int(args[1])
+                            user = await client.fetch_user(user_id)
+                            username = user.name
+                            if user_id in blacklist:
+                                blacklist.remove(user_id)
+                                with open(blacklist_file, "w") as f:
+                                    json.dump(blacklist, f)
+                                await message.channel.send(f"Removed {username} from the blacklist.")
+                                await consolelog.send(f"Removed {username} from the blacklist.")
+                            elif user_id not in blacklist:
+                                await message.channel.send(f"{username} is not in the blacklist.")
+                        else:
+                            await message.channel.send("Provide correct user ID.")
+                    elif args[0].isdigit():
+                        user_id = int(args[0])
+                        user = await client.fetch_user(user_id)
+                        username = user.name
+                        if user_id not in blacklist:
+                            blacklist.append(user_id)
+                            with open(blacklist_file, "w") as f:
+                                json.dump(blacklist, f)
+                            await message.channel.send(f"Successfully blacklisted {username}")
+                            await consolelog.send(f"Successfully blacklisted {username}")
+                        else:
+                            await message.channel.send("User is already blacklisted.")
+                    else:   
+                        await message.channel.send("Please provide correct user ID.")
+                else:
+                    await message.channel.send("Please provide correct user ID.")
+            else:
+                await message.channel.send("Only bot owner can run this command..")
             
         
         # suicide
