@@ -169,7 +169,7 @@ async def on_message(message):
             if message.author.id == issvsi:
                 if args:
                     if args[0] == "remove":
-                        if len(args) > 1 and args[1].isdigit():
+                        if args[1].isdigit():
                             user_id = int(args[1])
                             user = await client.fetch_user(user_id)
                             username = user.name
@@ -183,6 +183,19 @@ async def on_message(message):
                                 await message.channel.send(f"{username} is not in the blacklist.")
                         else:
                             await message.channel.send("Provide correct user ID.")
+                    elif args[0] == "list":
+                        if len(blacklist) > 1:
+                            embed = discord.Embed(
+                                title = "List of blacklister users:",
+                                description = blacklist
+                            )
+                            await message.channel.send(embed = embed)
+                        else:
+                            embed = discord.Embed(
+                                title = "List of blacklister users:",
+                                description = "Blacklist is empty!"
+                            )
+                            await message.channel.send(embed = embed)
                     elif args[0].isdigit():
                         user_id = int(args[0])
                         user = await client.fetch_user(user_id)
